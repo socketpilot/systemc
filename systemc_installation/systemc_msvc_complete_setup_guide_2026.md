@@ -8,7 +8,7 @@ This document explains:
 
 ---
 
-# Part 1: Build and Install SystemC using MSVC
+# Part 1a: Build and Install SystemC using MSVC
 
 Open:
 
@@ -76,6 +76,189 @@ share
 ```
 
 ---
+# Part 1b:
+# SystemC 3.0.2 Build Notes (Windows / Visual Studio 2026)
+
+## Environment
+
+* OS: Windows
+* Visual Studio: Visual Studio 2026 Community
+* CMake: 4.3.1
+* SystemC Version: 3.0.2
+* Source Repository: https://github.com/accellera-official/systemc
+
+## Clone SystemC
+
+```cmd
+git clone https://github.com/accellera-official/systemc.git
+cd systemc
+git checkout 3.0.2
+```
+
+## Verify Version
+
+```cmd
+git describe --tags
+git status
+```
+
+Expected output:
+
+```text
+3.0.2
+HEAD detached at 3.0.2
+nothing to commit, working tree clean
+```
+
+## Installed MSVC Toolsets
+
+Available toolsets:
+
+```text
+14.29.30133
+14.42.34433
+14.44.35207
+14.51.36231
+```
+
+## Problem Encountered
+
+During compilation with Visual Studio 2026 (MSVC 14.51):
+
+```text
+error C2039: 'opfx': is not a member of 'std::basic_ostream'
+error C2039: 'osfx': is not a member of 'std::basic_ostream'
+```
+
+File:
+
+```text
+src/sysc/datatypes/int/sc_int64_io.cpp
+```
+
+Affected lines:
+
+```cpp
+os.osfx();
+if (os.opfx())
+```
+
+The repository was verified as:
+
+```cmd
+git describe --tags
+```
+
+Output:
+
+```text
+3.0.2
+```
+
+No local modifications:
+
+```cmd
+git status
+```
+
+Output:
+
+```text
+working tree clean
+```
+
+## Recommended Approach
+
+Do not modify SystemC source files.
+
+Instead, build using an older MSVC toolset.
+
+Recommended toolset:
+
+```text
+v142 (Visual Studio 2019)
+```
+
+## Create a Fresh Build Directory
+
+```cmd
+cd C:\SystemC\systemc
+
+mkdir build_v142
+cd build_v142
+```
+
+## Configure CMake
+
+```cmd
+cmake .. ^
+-G "Visual Studio 18 2026" ^
+-A x64 ^
+-T v142 ^
+-DCMAKE_CXX_STANDARD=17 ^
+-DCMAKE_INSTALL_PREFIX=../install_msvc
+```
+
+## Build Debug
+
+```cmd
+cmake --build . --config Debug
+```
+
+## Build Release
+
+```cmd
+cmake --build . --config Release
+```
+
+## Install Debug
+
+```cmd
+cmake --install . --config Debug
+```
+
+## Install Release
+
+```cmd
+cmake --install . --config Release
+```
+
+## Output Locations
+
+Build output:
+
+```text
+build_v142\src\Debug\
+build_v142\src\Release\
+```
+
+Installation output:
+
+```text
+install_msvc\
+├── include\
+├── lib\
+├── bin\
+```
+
+## Notes
+
+* Reusing an existing build directory may cause CMake cache conflicts.
+* Use a fresh build directory when changing generator, platform, or toolset.
+* Verify the compiler version during configuration.
+* Preferred compiler version:
+
+```text
+MSVC 19.29.xxxxx
+```
+
+instead of:
+
+```text
+MSVC 19.51.xxxxx
+```
+
+when testing compatibility with SystemC 3.0.2.
 
 # Part 2: Create Visual Studio SystemC Project
 
