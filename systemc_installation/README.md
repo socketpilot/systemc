@@ -1,4 +1,4 @@
-# SystemC Integration
+# SystemC Installation-Execution
 
 This repository uses **SystemC 3.0.2**, the Accellera reference implementation of the SystemC standard for system-level modeling, simulation, and hardware/software co-design. SystemC extends C++ with constructs for concurrent processes, communication channels, event-driven simulation, and transaction-level modeling (TLM), enabling the development and verification of complex digital systems.
 
